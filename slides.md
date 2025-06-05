@@ -224,6 +224,10 @@ $ sudo virsh net-autostart host-network
 hideInToc: true
 ---
 
+# Create a definition for the host network (2 of 2)
+
+Verify
+
 ```bash
 $ virsh net-list --all
  Name           State    Autostart   Persistent
@@ -252,6 +256,10 @@ $ virsh pool-autostart default
 $ virsh pool-list --all
 $ virsh vol-list --pool default --details
 ```
+
+---
+hideInToc: true
+---
 
 # cloud-init image pool
 
@@ -335,15 +343,6 @@ tmpfs           6.3G  112K  6.3G   1% /run/user/1000
 hideInToc: true
 ---
 
-# Download could image template and resize
-
-```bash
-```
-
----
-hideInToc: true
----
-
 # Download cloud image template and resize
 
 ```bash
@@ -369,7 +368,7 @@ $ sudo qemu-img resize -f qcow2 \
 hideInToc: true
 ---
 
-# Define login parameters for cloud-init ISO
+# Define login parameters for cloud-init ISO (1 of 2)
 
 ```bash
 # Required for NoCloud module to function, uniquely identifies instance
@@ -378,6 +377,12 @@ instance-id: ubuntu-server-2404
 local-hostname: ubuntu-server-2404
 EOF
 ```
+
+---
+hideInToc: true
+---
+
+# Define login parameters for cloud-init ISO (2 of 2)
 
 ```bash
 # Main configuration script, tells cloud-init what to do when instance starts
