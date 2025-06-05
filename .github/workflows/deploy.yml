@@ -43,4 +43,4 @@ jobs:
 
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4 d
+        uses: actions/deploy-pages@v4
