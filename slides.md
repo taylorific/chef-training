@@ -73,8 +73,7 @@ layout: section
 hideInToc: true
 ---
 
-# Cinc Workstation Install - Ubuntu
-
+# Cinc Workstation Install - Linux
 Use the installation script provided by Cinc. The script detects your OS version and downloads the appropriate package.
 
 ```bash
@@ -122,6 +121,117 @@ Verify that the Ruby interpreter being used is the cin-workstation ruby instead 
 ```
 
 ---
+hideInToc: true
+---
+
+# Configure the Ruby environment (advanced)
+
+```bash
+mkdir -m 0755 ~/.bashrc.d
+```
+
+```bash
+# User specific aliases and functions
+if [[ -d ~/.bashrc.d ]]; then
+  for rc in ~/.bashrc.d/*; do
+    if [[ -f "$rc" ]]; then
+      source "$rc"
+    fi
+  done
+fi
+
+unset rc
+```
+
+```bash
+cat <<'EOF' > ~/.bashrc.d/100.cinc-workstation.sh
+#!/bin/bash
+
+eval "$(cinc shell-init bash)"
+EOF
+```
+
+---
+hideInToc: true
+---
+
+# Cinc Workstation Install - macOS
+
+Download the latest version of the Cinc Workstation package from https://downloads.cinc.sh/files/stable/cinc-workstation/ for your version of macOS and CPU architecture.
+
+Mount the DMG file and double-click the PKG file to start the install. The operation will warn you that it cannot verify the package. Click on the Done button. Then go to "System Settings > Privacy & Security". Scroll all the way down to view the "Security" section. You'll see that it says that the package was block to protect your Mac. Clcik on the "Open Anyway" button to run the install.
+
+The bulk of the Cinc Workstation install is in /opt/cinc-workstation, with a few copies of the main program binaries in /usr/local/bin to be in the default PATH.
+
+---
+hideInToc: true
+---
+
+# Configure the Ruby environment (simple)
+
+Configure the Ruby environment Cinc uses by adding the following commands to the configuration file for Z Shell (~/.zshrc):
+
+```bash
+# Load the zsh completion system - required to configure autocomplete
+echo 'autoload -Uz compinit' >> ~/.zshrc
+echo 'compinit' >> ~/.zshrc
+# Add the Cinc Workstation initialization content
+echo 'eval "$(cinc shell-init zsh)"' >> ~/.zshrc
+```
+
+Reload the config in the current shell with source ~/.zshrc or restart the current terminal.
+
+Verify that the Ruby interpreter being used is the cinc-workstation ruby instead of the system ruby:
+
+```bash
+% which ruby
+/opt/cinc-workstation/embedded/bin/ruby
+```
+
+---
+hideInToc: true
+---
+
+# Configure the Ruby environment (advanced)
+
+```bash
+mkdir -m 0755 ~/.zshrc.d
+```
+
+```bash
+# User specific aliases and functions
+if [[ -d ~/.zshrc.d ]]; then
+  for rc in ~/.zshrc.d/*; do
+    if [[ -f "$rc" ]]; then
+      source "$rc"
+    fi
+  done
+fi
+
+unset rc
+```
+
+```bash
+cat <<'EOF' > ~/.zshrc.d/100.cinc-workstation.sh
+#!/bin/bash
+
+autoload -Uz compinit
+compinit
+eval "$(cinc shell-init zsh)"
+EOF
+
+```
+
+---
+hideInToc: true
+---
+
+# macOS Uninstall
+
+To remove Cinc Workstation, run uninstall_chef_workstation (located in /usr/local/bin/uninstall_chef_workstation).
+
+
+---
 layout: section
 ---
 
@@ -130,6 +240,190 @@ layout: section
 <br>
 <br>
 <Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+# Prerequisites - Ubuntu
+
+```bash
+sudo apt-get update
+# to build rugged for taste-tester
+sudo apt-get install pkg-config
+# to build rugged extensions for taste-tester
+sudo apt-get install cmake
+# we need to install rugged with special openssl settings, or it will get
+# linked against the system openssl and won't work properly
+export OPENSSL_ROOT_DIR=/opt/cinc-workstation/embedded
+```
+
+---
+hideInToc: true
+---
+
+# Prerequisites - macOS
+
+```bash
+# install xcode via the App Store (sorry!)
+sudo xcodebuild -license accept
+# install homebrew
+brew install pkg-config
+brew install cmake
+brew install coreutils
+```
+
+---
+hideInToc: true
+---
+
+# Install taste-tester gem
+
+```bash
+$ eval "$(cinc shell-init bash)"
+$ which cinc
+/opt/cinc-workstation/bin/cinc
+
+cinc gem install taste_tester
+```
+
+---
+hideInToc: true
+---
+
+```bash
+sudo mkdir -p /usr/local/etc/taste-tester
+# sudo cp \
+  ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester-plugin.rb \
+  /usr/local/etc/taste-tester
+# sudo cp \
+  ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester.conf \
+  /usr/local/etc/taste-tester
+```
+
+---
+hideInToc: true
+---
+
+```bash
+sudo tee /usr/local/etc/taste-tester/taste-tester-plugin.rb <<'EOF'
+def self.test_remote_client_rb_extra_code(_hostname)
+  <<~EOF
+
+    follow_client_key_symlink true
+    client_fork false
+    no_lazy_load false
+    local_key_generation true
+    json_attribs '/etc/cinc/run-list.json'
+    ohai.critical_plugins ||= []
+    ohai.critical_plugins += [:Passwd]
+    ohai.critical_plugins += [:ShardSeed]
+    ohai.optional_plugins ||= []
+    ohai.optional_plugins += [:Passwd]
+    ohai.optional_plugins += [:ShardSeed]
+  EOF
+end
+EOF
+```
+
+---
+hideInToc: true
+---
+
+```
+sudo tee /usr/local/etc/taste-tester/taste-tester.conf <<EOF
+repo File.join(ENV['HOME'], 'github', 'boxcutter', 'boxcutter-chef-cookbooks')
+repo_type 'auto'
+base_dir ''
+cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
+# For now don't declare databag_dir - between meals seems to have a bug where it hardcodes debug_level=info
+# databag_dir 'data_bags'
+role_dir 'roles'
+role_type 'rb'
+chef_config_path '/etc/chef'
+chef_config 'client.rb'
+ref_file "#{ENV['HOME']}/.chef-cache/scale-taste-tester-ref.json"
+checksum_dir "#{ENV['HOME']}/.chef-cache/checksums"
+chef_client_command '/usr/local/sbin/chefctl -i'
+use_ssl false
+use_ssh_tunnels true
+ssh_command '/usr/bin/ssh -o StrictHostKeyChecking=no'
+chef_zero_path '/opt/cinc-workstation/bin/cinc-zero'
+chef_zero_logging true
+user ENV['USER']
+plugin_path '/usr/local/etc/taste-tester/taste-tester-plugin.rb'
+EOF
+```
+
+---
+hideInToc: true
+---
+
+```bash
+sudo mkdir -p /usr/local/etc/taste-tester
+# sudo cp \
+  ~/github/polymathrobotics/polymath-chef-cookbooks/cookbooks/polymath_chef/files/taste-tester/taste-tester-plugin.rb \
+  /usr/local/etc/taste-tester
+# sudo cp \
+  ~/github/polymathrobotics/polymath-chef-cookbooks/cookbooks/polymath_chef/files/taste-tester/taste-tester.conf \
+  /usr/local/etc/taste-tester
+```
+
+---
+hideInToc: true
+---
+
+```bash
+sudo tee /usr/local/etc/taste-tester/taste-tester-plugin.rb <<'EOF'
+def self.test_remote_client_rb_extra_code(_hostname)
+  <<~EOF
+
+    follow_client_key_symlink true
+    client_fork false
+    no_lazy_load false
+    local_key_generation true
+    json_attribs '/etc/cinc/run-list.json'
+    ohai.critical_plugins ||= []
+    ohai.critical_plugins += [:Passwd]
+    ohai.critical_plugins += [:ShardSeed]
+    ohai.optional_plugins ||= []
+    ohai.optional_plugins += [:Passwd]
+    ohai.optional_plugins += [:ShardSeed]
+  EOF
+end
+EOF
+```
+
+---
+hideInToc: true
+---
+
+```
+sudo tee /usr/local/etc/taste-tester/taste-tester.conf <<EOF
+repo File.join(ENV['HOME'], 'github', 'polymathrobotics', 'polymath-chef-cookbooks')
+repo_type 'auto'
+base_dir ''
+cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
+# For now don't declare databag_dir - between meals seems to have a bug where it hardcodes debug_level=info
+# databag_dir 'data_bags'
+role_dir 'roles'
+role_type 'rb'
+chef_config_path '/etc/chef'
+chef_config 'client.rb'
+ref_file "#{ENV['HOME']}/.chef-cache/scale-taste-tester-ref.json"
+checksum_dir "#{ENV['HOME']}/.chef-cache/checksums"
+chef_client_command '/usr/local/sbin/chefctl -i'
+use_ssl false
+use_ssh_tunnels true
+ssh_command '/usr/bin/ssh -o StrictHostKeyChecking=no'
+chef_zero_path '/opt/cinc-workstation/bin/cinc-zero'
+chef_zero_logging true
+user ENV['USER']
+plugin_path '/usr/local/etc/taste-tester/taste-tester-plugin.rb'
+EOF
+```
+
+
 
 ---
 layout: section
