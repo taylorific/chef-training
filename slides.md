@@ -735,13 +735,14 @@ virt-install \
   --connect qemu:///system \
   --name ubuntu-server-2404 \
   --boot uefi \
-  --memory 2048 \
+  --memory 3096 \
+  --cpu mode=host-passthrough \
   --vcpus 2 \
   --os-variant ubuntu24.04 \
-  --disk /var/lib/libvirt/images/ubuntu-server-2404.qcow2,bus=virtio \
+  --disk /var/lib/libvirt/images/ubuntu-server-2404.qcow2,bus=virtio,cache=none,discard=unmap \
   --disk /var/lib/libvirt/boot/ubuntu-server-2404-cloud-init.iso,device=cdrom \
   --network network=host-network,model=virtio \
-  --graphics spice \
+  --graphics none \
   --noautoconsole \
   --console pty,target_type=serial \
   --import \
@@ -772,11 +773,13 @@ In the guest:
 
 ```bash
 # login with ubuntu user
-$ cloud-init status
+$ cloud-init status --wait
 status: done
 
 # Disable cloud-init
 $ sudo touch /etc/cloud/cloud-init.disabled
+$ cloud-init status
+status: disabled
 $ sudo shutdown -h now
 ```
 
