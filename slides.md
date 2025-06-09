@@ -640,7 +640,7 @@ hideInToc: true
 # Download cloud image template and resize
 
 ```bash
-sudo apt get update
+sudo apt-get update
 sudo apt-get install curl
 ```
 ```bash
