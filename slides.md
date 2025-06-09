@@ -291,6 +291,20 @@ cinc gem install taste_tester
 hideInToc: true
 ---
 
+# Install patched
+
+```bash
+git clone https://github.com/facebook/between-meals.git
+cd between-meals
+cinc gem build between_meals.gemspec
+cinc gem uninstall between_meals
+cinc gem install between_meals-0.0.13.gem
+```
+
+---
+hideInToc: true
+---
+
 ```bash
 sudo mkdir -p /usr/local/etc/taste-tester
 # sudo cp \
@@ -336,8 +350,7 @@ repo File.join(ENV['HOME'], 'github', 'boxcutter', 'boxcutter-chef-cookbooks')
 repo_type 'auto'
 base_dir ''
 cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
-# For now don't declare databag_dir - between meals seems to have a bug where it hardcodes debug_level=info
-# databag_dir 'data_bags'
+databag_dir 'data_bags'
 role_dir 'roles'
 role_type 'rb'
 chef_config_path '/etc/chef'
@@ -404,8 +417,7 @@ repo File.join(ENV['HOME'], 'github', 'polymathrobotics', 'polymath-chef-cookboo
 repo_type 'auto'
 base_dir ''
 cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
-# For now don't declare databag_dir - between meals seems to have a bug where it hardcodes debug_level=info
-# databag_dir 'data_bags'
+databag_dir 'data_bags'
 role_dir 'roles'
 role_type 'rb'
 chef_config_path '/etc/chef'
