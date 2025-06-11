@@ -675,6 +675,12 @@ hideInToc: true
 sudo apt-get update
 sudo apt-get install curl
 ```
+
+```bash
+mkdir ubuntu-server-2404
+cd ubuntu-server-2404
+```
+
 ```bash
 curl -LO https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
 ```
@@ -911,17 +917,19 @@ ohai.optional_plugins += [:Passwd]
 EOF
 ```
 
----
-hideInToc: true
----
-
 ```bash
 sudo openssl genrsa -out /etc/cinc/client-prod.pem
 sudo openssl genrsa -out /etc/cinc/validation.pem
 
 sudo ln -sf /etc/cinc/client-prod.rb /etc/chef/client.rb
 sudo ln -sf /etc/cinc/client-prod.pem /etc/chef/client.pem
+````
 
+---
+hideInToc: true
+---
+
+```bash
 sudo tee /etc/chef/chefctl_hooks.rb <<EOF
 EOF
 
@@ -997,16 +1005,93 @@ layout: section
 hideInToc: true
 ---
 
-Tier and customer are configured via `/`
+Tier and customer are configured via `/etc/boxcutter_info.json`
+
+```bash
+apt-get update
+apt-get install jq
+```
+
+```bash
+jq . /etc/boxcutter-config.json
+```
 
 ---
 hideInToc: true
 ---
 
+Automation source is delivered to machines via git.
+
+```bash
+$ cd /var/chef/repos
+$ ls -l
+total 8
+drwxr-xr-x 12 root root 4096 Jun 11 13:36 boxcutter-chef-cookbooks
+drwxr-xr-x  8 root root 4096 Jun 11 13:32 chef-cookbooks
+root@ubuntu-server-2404:/var/chef/repos#
+```
+
 ---
 hideInToc: true
 ---
 
+Chef is configured to run via chefctl every 15 minutes:
+
+```bash
+$ cat /etc/cron.d/fb_crontab
+#
+# THIS FILE IS CONTROLLED BY CHEF, DO NOT EDIT!
+#
+# You may add cronjobs following the instructions in
+#   fb_cron/README.md
+#
+# chef
+*/15 * * * * root /usr/bin/test -f /var/chef/cron.default.override -o -f /etc/chef/test_timestamp || /usr/local/sbin/chefctl -q &>/dev/null
+```
+
+---
+layout: section
+---
+
+Taste-untester set to run every 5 minutes
+
+```bash
+$ more /etc/cron.d/fb_crontab
+# taste-untester
+*/5 * * * * root /usr/local/sbin/taste-untester &>/dev/null
+```
+
+---
+hideInToc: true
+---
+
+Chef run logs are located in `/var/log/chef`:
+
+```bash
+# ls -al /var/log/chef
+total 184
+drwxr-xr-x  2 root root     4096 Jun 11 13:45 .
+drwxrwxr-x 11 root syslog   4096 Jun 11 13:37 ..
+-rw-r--r--  1 root root     4381 Jun 11 13:33 chef.20250611.1333.1749648795.out
+-rw-r--r--  1 root root     3483 Jun 11 13:35 chef.20250611.1335.1749648923.out
+-rw-r--r--  1 root root   155905 Jun 11 13:37 chef.20250611.1336.1749649000.out
+-rw-r--r--  1 root root       75 Jun 11 13:45 chef.20250611.1345.1749649501.out
+lrwxrwxrwx  1 root root       47 Jun 11 13:45 chef.cur.out -> /var/log/chef/chef.20250611.1345.1749649501.out
+-rw-r--r--  1 root root     3541 Jun 11 13:33 chef.first.out
+lrwxrwxrwx  1 root root       47 Jun 11 13:37 chef.last.out -> /var/log/chef/chef.20250611.1336.1749649000.ou
+```
+
+---
+hideInToc: true
+---
+
+You can use the stop_chef_temporarily program to stop Chef runs (temporarily):
+
+```bash
+$ sudo /usr/local/sbin/stop_chef_temporarily 2
+Stopped Chef for 2 hours. To re-enable 
+ 'rm -f /var/chef/cron.default.override'
+```
 
 ---
 layout: section
