@@ -711,7 +711,6 @@ hideInToc: true
 # Define login parameters for cloud-init ISO (2 of 2)
 
 ```bash
-# Main configuration script, tells cloud-init what to do when instance starts
 cat >user-data <<EOF
 #cloud-config
 hostname: ubuntu-server-2404
@@ -768,10 +767,9 @@ virt-install \
   --name ubuntu-server-2404 \
   --boot uefi \
   --memory 3096 \
-  --cpu mode=host-passthrough \
   --vcpus 2 \
   --os-variant ubuntu24.04 \
-  --disk /var/lib/libvirt/images/ubuntu-server-2404.qcow2,bus=virtio,cache=none,discard=unmap \
+  --disk /var/lib/libvirt/images/ubuntu-server-2404.qcow2,bus=virtio \
   --disk /var/lib/libvirt/boot/ubuntu-server-2404-cloud-init.iso,device=cdrom \
   --network network=host-network,model=virtio \
   --graphics none \
@@ -812,6 +810,7 @@ status: done
 $ sudo touch /etc/cloud/cloud-init.disabled
 $ cloud-init status
 status: disabled
+
 $ sudo shutdown -h now
 ```
 
@@ -860,7 +859,7 @@ layout: section
 hideInToc: true
 ---
 
-# boxcutter chef-client
+# boxcutter chef-client - Install cinc client
 
 ```bash
 # Login to the VM with automat/superseekret
@@ -875,24 +874,27 @@ sudo mkdir -p /etc/cinc
 # /etc/chef -> /etc/cinc
 sudo ln -snf /etc/cinc /etc/chef
 
-curl -L https://omnitruck.cinc.sh/install.sh | sudo bash
+# curl -L https://omnitruck.cinc.sh/install.sh | sudo bash
 curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18.6.2
-
 
 # /opt/chef -> /opt/cinc
 sudo ln -snf /opt/cinc /opt/chef
+```
 
+
+---
+hideInToc: true
+---
+
+```bash
 ## prime onepassword secret /etc/cinc/op_service_account_token
-## Install 1Password cli
-# sudo apt-get update
-# sudo apt-get install unzip
-# ARCH="<choose between 386/amd64/arm/arm64>"
-# curl -o /tmp/op.zip https://cache.agilebits.com/dist/1P/op2/pkg/v2.30.3/op_linux_amd64_v2.30.3.zip
-# sudo unzip /tmp/op.zip op -d /usr/local/bin/
-# rm -f /tmp/op.zip
- 
-# op user get --me 
+```
 
+---
+hideInToc: true
+---
+
+```bash
 sudo tee /etc/cinc/client-prod.rb <<EOF
 local_mode true
 chef_repo_path '/var/chef/repos/boxcutter-chef-cookbooks'
@@ -907,7 +909,13 @@ ohai.critical_plugins += [:Passwd]
 ohai.optional_plugins ||= []
 ohai.optional_plugins += [:Passwd]
 EOF
+```
 
+---
+hideInToc: true
+---
+
+```bash
 sudo openssl genrsa -out /etc/cinc/client-prod.pem
 sudo openssl genrsa -out /etc/cinc/validation.pem
 
@@ -931,7 +939,14 @@ sudo tee /etc/chef/run-list.json <<EOF
   ]
 }
 EOF
+```
 
+---
+hideInToc: true
+---
+
+```bash
+sudo apt-get update
 sudo apt-get install git
 sudo mkdir -p /var/chef /var/chef/repos /var/log/chef
 cd /var/chef/repos
@@ -939,21 +954,59 @@ sudo git clone https://github.com/boxcutter/chef-cookbooks.git \
   /var/chef/repos/chef-cookbooks
 sudo git clone https://github.com/boxcutter/boxcutter-chef-cookbooks.git \
   /var/chef/repos/boxcutter-chef-cookbooks
+```
 
+---
+hideInToc: true
+---
+
+```bash
 sudo mkdir -p /usr/local/sbin
 sudo curl -o /usr/local/sbin/chefctl.rb \
   https://raw.githubusercontent.com/facebook/chef-utils/main/chefctl/src/chefctl.rb
 sudo chmod +x /usr/local/sbin/chefctl.rb
 sudo ln -sf /usr/local/sbin/chefctl.rb /usr/local/sbin/chefctl
+```
 
-sudo touch /root/firstboot_os
-echo "{\"tier\": \"robot\"}" | sudo tee /etc/boxcutter-config.json > /dev/null
+---
+hideInToc: true
+---
+
+```bash
+sudo su -
+touch /root/firstboot_os
+echo "{\"tier\": \"minimal\"}" | sudo tee /etc/boxcutter-config.json > /dev/null
 sudo chefctl -iv
 
 # Behind the scenes, it'sdoing this:
 # /opt/cinc/bin/cinc-client -c /etc/cinc/client.rb -j /etc/chef/run-list.json
 # /opt/cinc/bin/cinc-client --config /etc/cinc/client.rb --json-attributes /etc/chef/run-list.json
 ```
+
+---
+layout: section
+---
+
+# Features of the boxcutter automation system
+
+<br>
+<br>
+<Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+Tier and customer are configured via `/`
+
+---
+hideInToc: true
+---
+
+---
+hideInToc: true
+---
+
 
 ---
 layout: section
