@@ -6,7 +6,7 @@ theme: seriph
 background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
 hideInToc: true
-title: Welcome to Slidev
+title: Chef Training
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
