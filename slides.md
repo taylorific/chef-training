@@ -63,6 +63,26 @@ routeAlias: toc
 layout: section
 ---
 
+# Philosophy
+
+<br>
+<br>
+<Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+# Meta/Facebook Chef cookbooks
+
+- Facebook Chef cookbooks blog post - https://engineering.fb.com/2016/04/15/core-infra/facebook-chef-cookbooks/
+- Scaling System Configuration at Facebook - https://www.youtube.com/watch?v=-YtZiVxEiJ8
+- The Softer Side of DevOps https://www.youtube.com/watch?v=ry51Llzil1I]
+
+---
+layout: section
+---
+
 # Setup Chef Workstation
 
 <br>
