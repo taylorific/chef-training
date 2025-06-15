@@ -122,7 +122,8 @@ hideInToc: true
 
 - Multiple versions of the same code - version management too complicated and like branches
 - Most examples limit themselves to a single action per run
-- With ansible, most people don't converge on a schedule, just once when they set the machine up
+- With ansible, most people don't converge on a schedule, just once when they set the machine up.
+- Many examples don't limit the blast radius of change
 - Don't promote deploying code everywhere at once instead of a subset (does not mean changes everywhere at once, just code)
 - Can't easily test in production and revert
 
