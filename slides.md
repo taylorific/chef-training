@@ -80,6 +80,87 @@ hideInToc: true
 - The Softer Side of DevOps https://www.youtube.com/watch?v=ry51Llzil1I]
 
 ---
+hideInToc: true
+---
+
+# Design concepts
+
+- Homogeneous vs. Hetereogeneous
+  - JEOS boxes, xCAT - homogeneous
+  - Chef - hetereogeneous - must have a way to express the delta in configuraton
+
+---
+hideInToc: true
+---
+
+# Hetereogeneous building blocks
+
+- Service owners can own/adjust relevant settings
+- Client based, otherwise you have to scale two systems instead of one
+- Can produce the system you want in one pass (deterministic)
+- Only make the necessary changes (idempotent)
+- Easily extensible so it can be tied into other internal systems
+- No dictated workflow (flexible)
+
+---
+hideInToc: true
+---
+
+# Configuration as Data
+
+- Way to express configuration in a simple way, outside the configuration manageemnt code
+  - In Chef, can use arrays and hashes in attributes
+- Defaults are provided
+- Engineers can munge the bits they want
+- Various default and custom settings interpolated together when the configuration is materialized on a system
+
+---
+hideInToc: true
+---
+
+# Out of the box, Chef and Ansible support bad habits
+
+- Multiple versions of the same code - version management too complicated and like branches
+- Most examples limit themselves to a single action per run
+- With ansible, most people don't converge on a schedule, just once when they set the machine up
+- Don't promote deploying code everywhere at once instead of a subset (does not mean changes everywhere at once, just code)
+- Can't easily test in production and revert
+
+---
+hideInToc: true
+---
+
+# Why Chef?
+
+- Easier to see when there are problems with Chef itself
+- Can change core assumptions of the tool with a small amount of code, when needed
+
+---
+hideInToc: true
+---
+
+# Workflow
+
+- Provide API for anyone, anywhere to extend configs by munging data structures
+- Engineers don't need to know what they're building on, just what they want to change
+- Engineers can change their systems without fear of changing anything else
+- Stable quality signal
+- Testing needs to be easy (if testing isn't easy, people don't test)
+- Branches are duplicate work, avoid
+- Manage the entire system not just the pieces - move idempotency up
+
+---
+hideInToc: true
+---
+
+# Moving idempotency up
+
+- Facilitates putting system into desired configuration in one pass
+- Automates cleanup, avoids stale entries
+
+
+
+---
 layout: section
 ---
 
