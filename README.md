@@ -20,6 +20,7 @@ Learn more about Slidev at the [documentation](https://sli.dev/).
 The following projects were used for inspiration and some code was
 reused for the slideware:
 
+- [Phil Dibowitz](https://www.phildev.net/) and [Bryan Wann](https://binaryfury.wann.net/) for showing me the Facebook Chef way
 - https://sli.dev/ - Slidev slideware
 - https://github.com/alexanderdavide/slidev-theme-academic - Pagination - Alexander Eble
 - https://github.com/jpetazzo/container.training - Idea of using markdown slideware for training - Jérôme Petazzoni
