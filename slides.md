@@ -148,7 +148,7 @@ hideInToc: true
 - Stable quality signal
 - Testing needs to be easy (if testing isn't easy, people don't test)
 - Branches are duplicate work, avoid
-- Manage things in aggregate not as individual pieces ("move idempotency up")
+- Manage things in aggregate, not as individual pieces ("move idempotency up"). Managing 
 
 ---
 hideInToc: true
@@ -159,8 +159,7 @@ hideInToc: true
 - Configure things as a group that gets handled all together, not individually
 - Facilitates putting system into desired configuration in one pass
 - Automates cleanup, avoids stale entries
-
-
+- Managing things individually wastes people's time
 
 ---
 layout: section
