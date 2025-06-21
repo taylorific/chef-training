@@ -890,7 +890,7 @@ hideInToc: true
 In the guest:
 
 ```bash
-# login with ubuntu user
+# login with automat user
 $ cloud-init status --wait
 status: done
 
