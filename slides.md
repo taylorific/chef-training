@@ -1397,7 +1397,9 @@ hideInToc: true
 
 - Event handler that hooks the `:attribute_changed` event
 - Used to troubleshoot/debug issues with attribute precedence
-- Prints out where an attribute was set or overridden 
+- Prints out where an attribute was set or overridden
+- To not miss events, loaded via `client.rb` outside the Chef run
+- Does no reporting, just prints to log
 
 ---
 hideInToc: true
@@ -1422,5 +1424,58 @@ Chef.event_handler do
 
     Chef::Log.debug("Attribute Changed: precedence=#{precedence}, keys=#{keys}, value=#{value}")
   end 
+end
+```
+
+---
+hideInToc: true
+---
+
+# Resource updated handler
+
+- Event handler that hooks the `:resource_updated` event
+- Records all resource updates
+- Prints out details on the resource/source code location for a resource update
+- To not miss delayed or indirect updates, avoids using  `run_status.updated_resources`, tracks updates manually
+
+---
+hideInToc: true
+---
+
+In `client.rb`
+```bash
+# /etc/chef/client.rb
+require '/etc/cinc/handlers/resource-updated-handler.rb'
+```
+
+---
+hideInToc: true
+---
+```bash
+Chef.event_handler do
+  resource_updates = []
+  on :resource_updated do |resource, action|
+    next if resource.nil?
+
+    resource_updates << {
+      name: "#{resource.resource_name}[#{resource.name}]",
+      cookbook: resource.cookbook_name,
+      recipe: resource.recipe_name,
+      line: resource.source_line,
+      action: action,
+    }
+  end
+
+  on :run_completed do
+    if resource_updates.empty?
+      Chef::Log.info('No resources updated.')
+    else
+      Chef::Log.info("Updated #{resource_updates.size} resource(s):")
+      resource_updates.each do |r|
+        Chef::Log.info("  - #{r[:name]} (#{r[:cookbook]}::#{r[:recipe]} line #{r
+[:line]}) via :#{r[:action]}")
+      end
+    end
+  end
 end
 ```
