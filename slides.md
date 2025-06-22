@@ -1165,50 +1165,6 @@ Stopped Chef for 2 hours. To re-enable
 layout: section
 ---
 
-# Polymath Robotics bootstrap
-
-<br>
-<br>
-<Link to="toc" title="Table of Contents"/>
-
----
-hideInToc: true
----
-
-# polymathrobotics bootstrap
-
-1. Make sure your ssh key is registered in Rippling: https://www.notion.so/polymathrobotics/Rippling-SSH-Public-Key-Management-4e36dabf29454e68b566ada3a7f0949a?pvs=4
-
-2. Request a sandbox bootstrapping token from the #infra team, so that automation code can access secrets from 1Password. This will normally be a 1Password Service Account token with limited permissions to deploy to sandbox environments and not any production environments (sandbox tokens are limited tokens for testing).
-
-3. Copy bootstrap_chef.sh to your target system. Most straightforward way until you learn more about our automation is to grab it from Github: https://github.com/polymathrobotics/polymath-chef-cookbooks/blob/main/cookbooks/polymath_chef/files/bootstrap_chef.sh
-
-
----
-hideInToc: true
----
-
-# polymathrobotics bootstrap
-
-```bash
-# Become root because the provisioning user will lose sudo privileges
-sudo su -
-export OP_SERVICE_ACCOUNT_TOKEN=<token_from_infra>
-
-chmod +x bootstrap_chef.sh
-./bootstrap_chef.sh
-
-touch /root/firstboot_os
-chefctl -i
-
-# Once provisioned properly, remove firstboot cue
-rm /root/firstboot_os
-```
-
----
-layout: section
----
-
 # Taste tester
 
 <br>
@@ -1375,4 +1331,96 @@ TLDR; Most common usage is:
   taste-tester untest -s [host] # Put host back in production
                                 #   (optional - will revert itself after 1 hour)
 
+```
+
+
+---
+layout: section
+---
+
+# Ohai Integration
+
+<br>
+<br>
+<Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+# Ohai plugin
+
+https://docs.chef.io/ohai_custom/ 
+
+---
+layout: section
+---
+
+# Custom Handlers
+
+<br>
+<br>
+<Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+# Handlers
+
+- Handlers can hook events during the chef run
+- Ruby code, loaded with `require` in the `client.rb`
+
+---
+hideInToc: true
+---
+
+# Event Handlers
+
+- Use the Handler DSL to attach a callback to an event via the `on` method
+
+```bash
+Chef.event_handler do
+  on :event_type do
+    # some Ruby
+  end
+end
+```
+
+- List of event types: https://docs.chef.io/handlers/#event-types
+
+---
+hideInToc: true
+---
+
+# Attribute change handler
+
+- Event handler that hooks the `:attribute_changed` event
+- Used to troubleshoot/debug issues with attribute precedence
+- Prints out where an attribute was set or overridden 
+
+---
+hideInToc: true
+---
+
+In `client.rb`
+```bash
+# /etc/chef/client.rb
+require '/etc/cinc/handlers/attribute-change-handler.rb'
+```
+
+Attribute change handler:
+```bash
+# /etc/cinc/handlers/attribute-change-handler.rb
+Chef.event_handler do
+  on :attribute_changed do |precedence, keys, value| do
+    # Since we just got called when an attribute was changed, we can wind
+    # through the stack and look for a reference to our cookbook code. Dump
+    # Grab the first reference highest in the stack - should be our attribute
+    # setting code.
+    stack_frame = caller.find { |line| line.include?('cookbooks/') }
+
+    Chef::Log.debug("Attribute Changed: precedence=#{precedence}, keys=#{keys}, value=#{value}")
+  end 
+end
 ```
