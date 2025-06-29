@@ -987,13 +987,14 @@ tmux
 
 https://hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
 
+```bash
 ctrl+b % - split pane horizontally
 ctrl+b " - split pane vertically
 ctrl+b <arrow key>
 ctrl+b c - create new window
 ctrl+b n - next window
 ctrl+b p - previous window
-
+```
 
 ---
 hideInToc: true
@@ -1076,7 +1077,7 @@ node.methods
 ```
 
 ---
-layout: section
+hideInToc: true
 ---
 
 ```bash
@@ -1088,6 +1089,12 @@ resources("user[taylor]")
 puts resources("user[taylor]").to_text
 exit
 ```
+
+---
+hideInToc: true
+---
+
+https://stevendanna.github.io/blog/2012/01/28/shef-debugging-tips-1/
 
 ---
 layout: section
