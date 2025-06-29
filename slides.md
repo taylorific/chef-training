@@ -968,6 +968,12 @@ Stopped Chef for 2 hours. To re-enable
 ```
 
 ---
+hideInToc: true
+---
+
+https://coderanger.net/two-pass/
+
+---
 layout: section
 ---
 
@@ -1099,6 +1105,10 @@ https://stevendanna.github.io/blog/2012/01/28/shef-debugging-tips-1/
 https://discourse.chef.io/t/chef-event-handler-how-do-i-know-what-variables-classes-methods-etc-are-available-to-me/8758
 
 https://github.com/chrisgit/chef-debugging
+
+https://jtimberman.housepub.org/blog/2015/09/01/quick-tip-alternative-chef-shell-with-pry
+
+https://jtimberman.housepub.org/blog/2014/07/21/load-current-resource-and-chef-shell
 
 ---
 layout: section
