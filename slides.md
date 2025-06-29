@@ -332,199 +332,6 @@ hideInToc: true
 
 To remove Cinc Workstation, run uninstall_chef_workstation (located in /usr/local/bin/uninstall_chef_workstation).
 
-
----
-layout: section
----
-
-# Setup Taste Tester
-
-<br>
-<br>
-<Link to="toc" title="Table of Contents"/>
-
----
-hideInToc: true
----
-
-# Prerequisites - Ubuntu
-
-```bash
-sudo apt-get update
-# to build rugged for taste-tester
-sudo apt-get install pkg-config
-# to build rugged extensions for taste-tester
-sudo apt-get install cmake
-# we need to install rugged with special openssl settings, or it will get
-# linked against the system openssl and won't work properly
-export OPENSSL_ROOT_DIR=/opt/cinc-workstation/embedded
-```
-
----
-hideInToc: true
----
-
-# Prerequisites - macOS
-
-```bash
-# install xcode via the App Store (sorry!)
-sudo xcodebuild -license accept
-# install homebrew
-brew install pkg-config
-brew install cmake
-brew install coreutils
-```
-
----
-hideInToc: true
----
-
-# Install taste-tester gem
-
-```bash
-$ eval "$(cinc shell-init bash)"
-$ which cinc
-/opt/cinc-workstation/bin/cinc
-
-cinc gem install taste_tester
-```
-
----
-hideInToc: true
----
-
-# Install patched
-
-```bash
-git clone https://github.com/facebook/between-meals.git
-cd between-meals
-cinc gem build between_meals.gemspec
-cinc gem uninstall between_meals
-cinc gem install between_meals-0.0.13.gem
-```
-
----
-hideInToc: true
----
-
-```bash
-sudo mkdir -p /usr/local/etc/taste-tester
-# sudo cp \
-  ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester-plugin.rb \
-  /usr/local/etc/taste-tester
-# sudo cp \
-  ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester.conf \
-  /usr/local/etc/taste-tester
-```
-
----
-hideInToc: true
----
-
-```bash
-sudo tee /usr/local/etc/taste-tester/taste-tester-plugin.rb <<'EOF'
-def self.test_remote_client_rb_extra_code(_hostname)
-  <<~EOF
-
-    follow_client_key_symlink true
-    client_fork false
-    no_lazy_load false
-    local_key_generation true
-    json_attribs '/etc/cinc/run-list.json'
-    ohai.critical_plugins ||= []
-    ohai.critical_plugins += [:Passwd]
-    ohai.critical_plugins += [:ShardSeed]
-    ohai.optional_plugins ||= []
-    ohai.optional_plugins += [:Passwd]
-    ohai.optional_plugins += [:ShardSeed]
-  EOF
-end
-EOF
-```
-
----
-hideInToc: true
----
-
-```
-sudo tee /usr/local/etc/taste-tester/taste-tester.conf <<EOF
-repo File.join(ENV['HOME'], 'github', 'boxcutter', 'boxcutter-chef-cookbooks')
-repo_type 'auto'
-base_dir ''
-cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
-databag_dir 'data_bags'
-role_dir 'roles'
-role_type 'rb'
-chef_config_path '/etc/chef'
-chef_config 'client.rb'
-ref_file "#{ENV['HOME']}/.chef-cache/scale-taste-tester-ref.json"
-checksum_dir "#{ENV['HOME']}/.chef-cache/checksums"
-chef_client_command '/usr/local/sbin/chefctl -i'
-use_ssl false
-use_ssh_tunnels true
-ssh_command '/usr/bin/ssh -o StrictHostKeyChecking=no'
-chef_zero_path '/opt/cinc-workstation/bin/cinc-zero'
-chef_zero_logging true
-user ENV['USER']
-plugin_path '/usr/local/etc/taste-tester/taste-tester-plugin.rb'
-EOF
-```
-
----
-hideInToc: true
----
-
-```bash
-sudo tee /usr/local/etc/taste-tester/taste-tester-plugin.rb <<'EOF'
-def self.test_remote_client_rb_extra_code(_hostname)
-  <<~EOF
-
-    follow_client_key_symlink true
-    client_fork false
-    no_lazy_load false
-    local_key_generation true
-    json_attribs '/etc/cinc/run-list.json'
-    ohai.critical_plugins ||= []
-    ohai.critical_plugins += [:Passwd]
-    ohai.critical_plugins += [:ShardSeed]
-    ohai.optional_plugins ||= []
-    ohai.optional_plugins += [:Passwd]
-    ohai.optional_plugins += [:ShardSeed]
-  EOF
-end
-EOF
-```
-
----
-hideInToc: true
----
-
-```
-sudo tee /usr/local/etc/taste-tester/taste-tester.conf <<EOF
-repo File.join(ENV['HOME'], 'github', 'polymathrobotics', 'polymath-chef-cookbooks')
-repo_type 'auto'
-base_dir ''
-cookbook_dirs ['cookbooks', '../chef-cookbooks/cookbooks']
-databag_dir 'data_bags'
-role_dir 'roles'
-role_type 'rb'
-chef_config_path '/etc/chef'
-chef_config 'client.rb'
-ref_file "#{ENV['HOME']}/.chef-cache/scale-taste-tester-ref.json"
-checksum_dir "#{ENV['HOME']}/.chef-cache/checksums"
-chef_client_command '/usr/local/sbin/chefctl -i'
-use_ssl false
-use_ssh_tunnels true
-ssh_command '/usr/bin/ssh -o StrictHostKeyChecking=no'
-chef_zero_path '/opt/cinc-workstation/bin/cinc-zero'
-chef_zero_logging true
-user ENV['USER']
-plugin_path '/usr/local/etc/taste-tester/taste-tester-plugin.rb'
-EOF
-```
-
-
-
 ---
 layout: section
 ---
@@ -1118,7 +925,7 @@ $ cat /etc/cron.d/fb_crontab
 ```
 
 ---
-layout: section
+hideInToc: true
 ---
 
 Taste-untester set to run every 5 minutes
@@ -1159,6 +966,33 @@ You can use the stop_chef_temporarily program to stop Chef runs (temporarily):
 $ sudo /usr/local/sbin/stop_chef_temporarily 2
 Stopped Chef for 2 hours. To re-enable 
  'rm -f /var/chef/cron.default.override'
+```
+
+---
+layout: section
+---
+
+# chef-shell
+
+<br>
+<br>
+<Link to="toc" title="Table of Contents"/>
+
+---
+hideInToc: true
+---
+
+```bash
+cinc-zero
+```
+cinc-client --local-mode --config client.rb -o 'recipe[boxcutter_ohai],recipe[boxcutter_init]'
+```
+
+```bash
+chef-shell \
+  --client \
+  --config client.rb \
+  --override-runlist 'recipe[boxcutter_ohai],recipe[boxcutter_init]'
 ```
 
 ---
@@ -1332,7 +1166,6 @@ TLDR; Most common usage is:
                                 #   (optional - will revert itself after 1 hour)
 
 ```
-
 
 ---
 layout: section
