@@ -1096,6 +1096,10 @@ hideInToc: true
 
 https://stevendanna.github.io/blog/2012/01/28/shef-debugging-tips-1/
 
+https://discourse.chef.io/t/chef-event-handler-how-do-i-know-what-variables-classes-methods-etc-are-available-to-me/8758
+
+https://github.com/chrisgit/chef-debugging
+
 ---
 layout: section
 ---
