@@ -827,6 +827,9 @@ hideInToc: true
 ```bash
 sudo apt-get update
 sudo apt-get install git
+```
+
+```bash
 sudo mkdir -p /var/chef /var/chef/repos /var/log/chef
 cd /var/chef/repos
 sudo git clone https://github.com/boxcutter/chef-cookbooks.git \
@@ -979,15 +982,18 @@ hideInToc: true
 ---
 
 ```bash
-cinc-zero
-```
-cinc-client --local-mode --config client.rb -o 'recipe[boxcutter_ohai],recipe[boxcutter_init]'
+/usr/local/sbin/stop_chef_temporarily
+/opt/cinc/embedded/bin/cinc-zero
+cd /var/chef/repos/chef-cookbooks/cookbooks
+knife upload . -c /etc/cinc/client.rb
+knife upload . -c /etc/cinc/client.rb
 ```
 
 ```bash
-chef-shell \
+cinc-shell \
   --client \
-  --config client.rb \
+  --server http://localhost:8889 \
+  --config /etc/cinc/client.rb \
   --override-runlist 'recipe[boxcutter_ohai],recipe[boxcutter_init]'
 ```
 
