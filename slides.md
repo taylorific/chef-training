@@ -982,12 +982,47 @@ hideInToc: true
 ---
 
 ```bash
-/usr/local/sbin/stop_chef_temporarily
-/opt/cinc/embedded/bin/cinc-zero
-cd /var/chef/repos/chef-cookbooks/cookbooks
-knife upload . -c /etc/cinc/client.rb
-knife upload . -c /etc/cinc/client.rb
+tmux
 ```
+
+https://hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
+
+ctrl+b % - split pane horizontally
+ctrl+b " - split pane vertically
+ctrl+b <arrow key>
+ctrl+b c - create new window
+ctrl+b n - next window
+ctrl+b p - previous window
+
+
+---
+hideInToc: true
+---
+
+```bash
+/usr/local/sbin/stop_chef_temporarily
+eval "$(cinc shell-init bash)"
+which ruby
+cinc-zero
+
+openssl genrsa -out local-zero.pem 2048
+sudo tee knife.rb <<EOF
+cookbook_path [
+  '/var/chef/repos/chef-cookbooks/cookbooks',
+  '/var/chef/repos/boxcutter-chef-cookbooks/cookbooks'
+]
+node_name 'local-zero'
+client_key "#{File.dirname(__FILE__)}/local-zero.pem"  # dummy key
+chef_server_url 'http://localhost:8889'
+EOF
+
+cd /var/chef/repos/chef-cookbooks/cookbooks
+knife cookbook upload --all -c knife.rb
+```
+
+---
+hideInToc: true
+---
 
 ```bash
 cinc-shell \
@@ -995,6 +1030,63 @@ cinc-shell \
   --server http://localhost:8889 \
   --config /etc/cinc/client.rb \
   --override-runlist 'recipe[boxcutter_ohai],recipe[boxcutter_init]'
+```
+
+Test Kitchen
+```bash
+cd /tmp/kitchen
+cinc-shell c client.rb -j dna.json
+```
+
+---
+hideInToc: true
+---
+
+```bash
+cinc (18.7.10)> node.keys
+ =>
+["boxcutter_chef",
+ "boxcutter_nfs",
+ "boxcutter_docker",
+ "boxcutter_onepassword",
+```
+
+```bash
+> IO.popen('less', 'w') { |f| f.puts node.keys.sort }
+
+def page(obj)
+  IO.popen('less', 'w') { |f| f.puts obj }
+end
+
+page help
+```
+
+```bash
+cinc (18.7.10)> node['virtualization']
+ => {"systems"=>{"kvm"=>"guest"}, "system"=>"kvm", "role"=>"guest"}
+cinc (18.7.10)> node['fqdn']
+ => "ubuntu-server-2404"
+```
+
+```bash
+node.attributes
+node.methods
+  node.automatic_attrs
+  node.default_attrs
+```
+
+---
+layout: section
+---
+
+```bash
+recipe_mode
+resources
+# Grab a single resource
+resources("user[taylor]")
+# Show the resource
+puts resources("user[taylor]").to_text
+exit
 ```
 
 ---
