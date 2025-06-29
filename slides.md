@@ -608,13 +608,9 @@ chpasswd: { expire: False }
 ssh_pwauth: True
 package_update: False
 package_upgrade: false
-packages:
-  - qemu-guest-agent
-growpart:
-  mode: auto
-  devices: ['/']
-power_state:
-  mode: reboot
+packages: ['qemu-guest-agent']
+growpart: { mode: auto, devices: ['/'] }
+power_state: { mode: reboot }
 EOF
 ```
 
