@@ -1484,13 +1484,13 @@ hideInToc: true
 ---
 
 ```bash
-sudo mkdir -p /usr/local/etc/taste-tester
+sudo mkdir -p /usr/local/etc/taste-tester/boxcutter
 # sudo cp \
   ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester-plugin.rb \
-  /usr/local/etc/taste-tester
+  /usr/local/etc/taste-tester/boxcutter/
 # sudo cp \
   ~/github/boxcutter/boxcutter-chef-cookbooks/cookbooks/boxcutter_chef/files/taste-tester/taste-tester.conf \
-  /usr/local/etc/taste-tester
+  /usr/local/etc/taste-tester/boxcutter/
 ```
 
 ---
@@ -1498,7 +1498,7 @@ hideInToc: true
 ---
 
 ```bash
-sudo tee /usr/local/etc/taste-tester/taste-tester-plugin.rb <<'EOF'
+sudo tee /usr/local/etc/taste-tester/boxcutter/taste-tester-plugin.rb <<'EOF'
 def self.test_remote_client_rb_extra_code(_hostname)
   <<~EOF
 
@@ -1523,7 +1523,7 @@ hideInToc: true
 ---
 
 ```bash
-sudo tee /usr/local/etc/taste-tester/taste-tester.conf <<EOF
+sudo tee /usr/local/etc/taste-tester/boxcutter/taste-tester.conf <<EOF
 repo File.join(ENV['HOME'], 'github', 'boxcutter', 'boxcutter-chef-cookbooks')
 repo_type 'auto'
 base_dir ''
@@ -1542,7 +1542,7 @@ ssh_command '/usr/bin/ssh -o StrictHostKeyChecking=no'
 chef_zero_path '/opt/cinc-workstation/bin/cinc-zero'
 chef_zero_logging true
 user ENV['USER']
-plugin_path '/usr/local/etc/taste-tester/taste-tester-plugin.rb'
+plugin_path '/usr/local/etc/taste-tester/boxcutter/taste-tester-plugin.rb'
 EOF
 ```
 
@@ -1553,10 +1553,11 @@ hideInToc: true
 ```bash
 cd ~/github/boxcutter/boxcutter-chef-cookbooks
 
+export NODE_IP=10.63.33.23
 taste-tester test \
-  -s 10.63.33.116 \
+  -s ${NODE_IP} \
   --user taylor \
-  -c /usr/local/etc/taste-tester/taste-tester.conf
+  -c /usr/local/etc/taste-tester/boxcutter/taste-tester.conf
 ```
 
 ```bash
