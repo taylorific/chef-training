@@ -860,9 +860,67 @@ touch /root/firstboot_os
 echo "{\"tier\": \"minimal\"}" | sudo tee /etc/boxcutter-config.json > /dev/null
 sudo chefctl -iv
 
-# Behind the scenes, it'sdoing this:
-# /opt/cinc/bin/cinc-client -c /etc/cinc/client.rb -j /etc/chef/run-list.json
+# Behind the scenes, it's doing this:
 # /opt/cinc/bin/cinc-client --config /etc/cinc/client.rb --json-attributes /etc/chef/run-list.json
+# --config - specifies the configuration file
+# --json-attributes - passes a JSON file containing node attributes, typically used for one-off runs
+```
+
+---
+hideInToc: true
+---
+
+# Behind the scenes
+
+```bash
+# jq . /etc/chef/run-list.json
+{
+  "run_list": [
+    "recipe[boxcutter_ohai]",
+    "recipe[boxcutter_init]",
+    "role[tier_minimal]"
+  ]
+}
+```
+
+---
+hideInToc: true
+---
+
+# Behind the scenes
+
+```bash
+# less /etc/cinc/client.rb
+local_mode true
+chef_repo_path '/var/chef/repos/boxcutter-chef-cookbooks'
+cookbook_path [
+  '/var/chef/repos/chef-cookbooks/cookbooks',
+  '/var/chef/repos/boxcutter-chef-cookbooks/cookbooks'
+]
+follow_client_key_symlink true
+client_fork false
+no_lazy_load false
+local_key_generation true
+json_attribs '/etc/cinc/run-list.json'
+%w(
+  attribute_changed_handler.rb
+).each do |handler|
+  handler_file = File.join('/etc/cinc/handlers', handler)
+  if File.exist?(handler_file)
+    require handler_file
+  end
+end
+ohai.critical_plugins ||= []
+ohai.critical_plugins += [:Passwd]
+ohai.critical_plugins += [:ShardSeed]
+ohai.optional_plugins ||= []
+ohai.optional_plugins += [:Passwd]
+ohai.optional_plugins += [:ShardSeed]
+
+# these seem to incorrectly get set to /etc/cinc instead of /var/chef when
+# local mode is used, confusing our chefctl config
+file_backup_path File.join('/var/chef', 'backup')
+file_cache_path File.join('/var/chef', 'cache')
 ```
 
 ---
@@ -879,7 +937,7 @@ layout: section
 hideInToc: true
 ---
 
-Tier and customer are configured via `/etc/boxcutter_info.json`
+Tier is configured via `/etc/boxcutter_info.json`
 
 ```bash
 apt-get update
@@ -887,7 +945,10 @@ apt-get install jq
 ```
 
 ```bash
-jq . /etc/boxcutter-config.json
+$ jq . /etc/boxcutter-config.json
+{
+  "tier": "minimal"
+}
 ```
 
 ---
@@ -904,6 +965,60 @@ drwxr-xr-x 12 root root 4096 Jun 11 13:36 boxcutter-chef-cookbooks
 drwxr-xr-x  8 root root 4096 Jun 11 13:32 chef-cookbooks
 root@ubuntu-server-2404:/var/chef/repos#
 ```
+
+---
+hideInToc: true
+---
+
+```bash
+$ less /etc/chef/chefctl_hooks.rb
+module BoxcutterHook
+  def pre_run(_output)
+    unless ::File.exist?('/var/chef/repos/chef-cookbooks')
+      Dir.chdir '/var/chef/repos' do
+        Mixlib::ShellOut.new(
+          'git clone https://github.com/boxcutter/chef-cookbooks',
+          ).run_command
+      end
+    end
+    unless ::File.exist?('/var/chef/repos/boxcutter-chef-cookbooks')
+      Dir.chdir '/var/chef/repos' do
+        Mixlib::ShellOut.new(
+          'git clone https://github.com/boxcutter/boxcutter-chef-cookbooks',
+          ).run_command
+      end
+    end
+    [
+      '/var/chef/repos/chef-cookbooks',
+      '/var/chef/repos/boxcutter-chef-cookbooks',
+    ].each do |repo|
+      Dir.chdir repo do
+        Chefctl.logger.info("Updating #{repo}")
+        s = Mixlib::ShellOut.new('git fetch origin').run_command
+        if s.error? return 'Failed to fetch git changes'
+        s = Mixlib::ShellOut.new('git reset --hard origin/main').run_command
+        if s.error? return 'Failed to update git repo'
+      end
+    end
+  end
+end
+
+Chefctl::Plugin.register BoxcutterHook
+```
+
+---
+hideInToc: true
+---
+
+# chefctl - Pluggable Chef controller
+
+https://github.com/facebook/chef-utils/tree/main/chefctl
+
+- System-level lock file
+- Clean up old Chef processes
+- Log file management
+- Extensible hooks at all stages of the Chef run 
+- Platform agnostic, tested to work on Linux, OSX and Windows
 
 ---
 hideInToc: true
