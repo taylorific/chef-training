@@ -1024,30 +1024,65 @@ https://github.com/facebook/chef-utils/tree/main/chefctl
 hideInToc: true
 ---
 
+Chef-related timers
+
+```bash
+$ systemctl list-timers --all --output=json | jq -r '.[].unit'
+```
+
+- chef.timer - Runs `chefctl -q` every 15 minutes.
+- cleanup_chef_logs.timer - Only keep 2 weeks of logs in `/var/log/chef`, run daily.
+- remove_override_files.timer - Removes `/var/chef/cron.default.override` after an hour, controlled with `stop_chef_temporarily`
+- taste-untester.timer` - Runs `/usr/local/sbin/taste-untester` to revert to production Chef an hour after `/etc/chef/test_timestamp` is last touched.
+  
+---
+hideInToc: true
+---
+
 Chef is configured to run via chefctl every 15 minutes:
 
 ```bash
-$ cat /etc/cron.d/fb_crontab
-#
-# THIS FILE IS CONTROLLED BY CHEF, DO NOT EDIT!
-#
-# You may add cronjobs following the instructions in
-#   fb_cron/README.md
-#
-# chef
-*/15 * * * * root /usr/bin/test -f /var/chef/cron.default.override -o -f /etc/chef/test_timestamp || /usr/local/sbin/chefctl -q &>/dev/null
+# cat /etc/systemd/system/chef.timer
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task chef
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=*:0/15:0
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+FixedRandomDelay=true
+Unit=chef.service
 ```
 
 ---
 hideInToc: true
 ---
 
-Taste-untester set to run every 5 minutes
+Chef is configured to run via chefctl every 15 minutes:
 
 ```bash
-$ more /etc/cron.d/fb_crontab
-# taste-untester
-*/5 * * * * root /usr/local/sbin/taste-untester &>/dev/null
+# cat /etc/systemd/system/chef.service
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task chef
+After=network.target
+
+[Service]
+Type=oneshot
+Slice=system-timers-chef.slice
+ExecStart=/bin/sh -c '/usr/bin/test -f /var/chef/cron.default.override -o -f /etc/chef/test_timestamp || /usr/local/sbin/chefctl -q'
+TimeoutStopSec=90s
+TimeoutStartSec=1d 6h
+TimeoutStopSec=15m
 ```
 
 ---
@@ -1055,6 +1090,8 @@ hideInToc: true
 ---
 
 Chef run logs are located in `/var/log/chef`:
+- Current run: `cat /var/log/chef/chef.cur.out`
+- Last run: `cat /var/log/chef/chef.last.out`
 
 ```bash
 # ls -al /var/log/chef
@@ -1074,12 +1111,152 @@ lrwxrwxrwx  1 root root       47 Jun 11 13:37 chef.last.out -> /var/log/chef/che
 hideInToc: true
 ---
 
+Chef logs are retained for 2 weeks.
+
+```bash
+# cat /etc/systemd/system/cleanup_chef_logs.timer
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task cleanup_chef_logs
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=*-*-* 01:01:00
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+FixedRandomDelay=true
+Unit=cleanup_chef_logs.service
+```
+
+---
+hideInToc: true
+---
+
+Chef logs are retained for 2 weeks.
+
+```bash
+# cat /etc/systemd/system/cleanup_chef_logs.service
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task cleanup_chef_logs
+After=network.target
+
+[Service]
+Type=oneshot
+Slice=system-timers-cleanup_chef_logs.slice
+ExecStart=/bin/sh -c '/usr/bin/find /var/log/chef -maxdepth 1 -name chef.2* -mtime +14 -exec /bin/rm -f {} \;'
+TimeoutStopSec=90s
+```
+
+---
+hideInToc: true
+---
+
 You can use the stop_chef_temporarily program to stop Chef runs (temporarily):
 
 ```bash
 $ sudo /usr/local/sbin/stop_chef_temporarily 2
 Stopped Chef for 2 hours. To re-enable 
  'rm -f /var/chef/cron.default.override'
+```
+
+---
+hideInToc: true
+---
+
+```bash
+# cat /etc/systemd/system/remove_override_files.timer
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task remove_override_files
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=*:0/5:0
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+FixedRandomDelay=true
+Unit=remove_override_files.service
+```
+
+---
+hideInToc: true
+---
+
+```bash
+# cat /etc/systemd/system/remove_override_files.service
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task remove_override_files
+After=network.target
+
+[Service]
+Type=oneshot
+Slice=system-timers-remove_override_files.slice
+ExecStart=/bin/sh -c '/usr/bin/find /var/chef/ -maxdepth 1 -name cron.default.override -mmin +60 -exec /bin/rm -f {} \;'
+TimeoutStopSec=90s
+```
+
+---
+hideInToc: true
+---
+
+Taste-untester set to run every 5 minutes
+
+```bash
+# cat /etc/systemd/system/taste-untester.timer
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task taste-untester
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=*:0/5:0
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+FixedRandomDelay=true
+Unit=taste-untester.service
+```
+
+---
+hideInToc: true
+---
+
+Taste-untester set to run every 5 minutes
+
+```bash
+# cat /etc/systemd/system/taste-untester.service
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task taste-untester
+After=network.target
+
+[Service]
+Type=oneshot
+Slice=system-timers-taste-untester.slice
+ExecStart=/usr/local/sbin/taste-untester
+TimeoutStopSec=90s
 ```
 
 ---
