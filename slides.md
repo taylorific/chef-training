@@ -120,6 +120,7 @@ hideInToc: true
 
 # Out of the box, Chef and Ansible support bad habits
 
+- Most people hardcode their defaults making it difficult to share automation with other teams, much less other companies. Contract for consuming automation is not flexible.
 - Multiple versions of the same code - version management too complicated and like branches
 - Most examples limit themselves to a single action per run
 - With ansible, most people don't converge on a schedule, just once when they set the machine up.
