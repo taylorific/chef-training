@@ -136,6 +136,17 @@ hideInToc: true
 
 - Easier to see when there are problems with Chef itself
 - Can change core assumptions of the tool with a small amount of code, when needed
+- Facebook has open sourced a lot of reusable, high-quality code that they keep updated
+
+---
+hideInToc: true
+---
+
+# Why Ruby?
+
+- Ruby is better for coding DSLs, native support for anonymous blocks, clean context switching and methods without parentheses make DSLs look clean and natural
+- Ruby allows you to reopen any class and modify it (a.k.a. monkey patching), making it easy to add new behaviour to core objects
+- Ruby is closest in philosophy to Perl, which resonated more with sysadmins when Chef was invented
 
 ---
 hideInToc: true
