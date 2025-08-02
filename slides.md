@@ -108,7 +108,7 @@ hideInToc: true
 
 # Configuration as Data
 
-- Way to express configuration in a simple way, outside the configuration manageemnt code
+- Way to express configuration in a simple way, outside the configuration manageement code
   - In Chef, can use arrays and hashes in attributes
 - Defaults are provided
 - Engineers can munge the bits they want
@@ -125,7 +125,7 @@ hideInToc: true
 - Most examples limit themselves to a single action per run
 - With ansible, most people don't converge on a schedule, just once when they set the machine up.
 - Many examples don't limit the blast radius of change
-- Don't promote deploying code everywhere at once instead of a subset (does not mean changes everywhere at once, just code)
+- Promote deploying code everywhere at once instead of a subset (does not mean changes everywhere at once, just code)
 - Can't easily test in production and revert
 
 ---
@@ -136,7 +136,7 @@ hideInToc: true
 
 - Easier to see when there are problems with Chef itself
 - Can change core assumptions of the tool with a small amount of code, when needed
-- Facebook has open sourced a lot of reusable, high-quality code that they keep updated
+- Meta/Facebook has open sourced a lot of reusable, high-quality code that they keep updated
 
 ---
 hideInToc: true
