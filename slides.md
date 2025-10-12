@@ -1466,20 +1466,6 @@ brew install coreutils
 hideInToc: true
 ---
 
-# Install taste-tester gem
-
-```bash
-$ eval "$(conc shell-init bash)"
-$ which cinc
-/opt/cinc-workstation/bin/cinc
-
-cinc gem install taste_tester
-```
-
----
-hideInToc: true
----
-
 # Install patched between_meals
 
 ```bash
@@ -1488,6 +1474,20 @@ cd between-meals
 cinc gem build between_meals.gemspec
 cinc gem uninstall between_meals
 cinc gem install between_meals-0.0.13.gem
+```
+
+---
+hideInToc: true
+---
+
+# Install patched taste-tester gem
+
+```bash
+git clone https://github.com/facebook/taste-tester.git
+cd taste-tester
+cinc gem build taste_tester.gemspec
+cinc gem uninstall taste_tester
+cinc gem install taste_tester-0.0.19.gem
 ```
 
 ---
