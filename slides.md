@@ -608,7 +608,7 @@ cat >user-data <<EOF
 #cloud-config
 hostname: ubuntu-server-2404
 users:
-  - name: automat
+  - name: autobot
     uid: 63112
     primary_group: users
     groups: users
@@ -691,7 +691,7 @@ hideInToc: true
 In the guest:
 
 ```bash
-# login with automat user
+# login with autobot user
 $ cloud-init status --wait
 status: done
 
@@ -751,9 +751,8 @@ hideInToc: true
 # boxcutter chef-client - Install cinc client
 
 ```bash
-# Login to the VM with automat/superseekret
+# Login to the VM with autobot
 virsh console ubuntu-server-2404
-# login with automat/superseekret
 
 # chefctl uses a shebang that points at /opt/chef, so make sure we have a link
 # in place for compatibility
@@ -1483,6 +1482,7 @@ hideInToc: true
 # Install patched taste-tester gem
 
 ```bash
+cinc gem install rugged
 git clone https://github.com/facebook/taste-tester.git
 cd taste-tester
 cinc gem build taste_tester.gemspec
