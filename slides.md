@@ -1465,6 +1465,20 @@ brew install coreutils
 hideInToc: true
 ---
 
+# Build rugged for taste-tester
+
+```bash
+# we need to install rugged with special openssl settings, or it will get
+# linked against the system openssl and won't work properly
+export OPENSSL_ROOT_DIR=/opt/cinc-workstation/embedded
+
+cinc gem install rugged
+```
+
+---
+hideInToc: true
+---
+
 # Install patched between_meals
 
 ```bash
