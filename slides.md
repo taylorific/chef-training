@@ -1602,6 +1602,60 @@ TLDR; Most common usage is:
 ```
 
 ---
+hideInToc: true
+---
+
+# chefctl options
+
+By default, `chefctl` uses `--force-logger` with chef-client:
+
+Example:
+```
+INFO: file[/tmp/example.txt] created file /tmp/example.txt
+INFO: service[nginx] restarted
+INFO: Finished core resources
+```
+
+- No Recipe: headers
+- No * `resource[action]` blocks
+- Everything is `INFO:` lines
+- Looks like traditional syslog-style output
+
+You can use options to use a formatter, with more traditional chef-client output:
+
+Example:
+```
+Recipe: demo::default
+  * file[/tmp/example.txt] action create
+    - create new file /tmp/example.txt
+
+  * service[nginx] action restart
+    - restart service service[nginx]
+
+INFO: Finished core resources
+```
+
+- Resource output is formatted
+- Chef::Log.info appears separately
+
+---
+hideInToc: true
+---
+
+# chefctl options
+
+Uses chefclient `--force-logger` option by default
+
+```bash
+/usr/local/sbin/chefctl -iv -- -F doc -l debug
+```
+
+```bash
+# Alias: /usr/local/sbin/chefctl -iv --human
+/usr/local/sbin/chefctl -iv -- -F doc -l fatal
+```
+
+---
 layout: section
 ---
 
