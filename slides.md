@@ -1675,12 +1675,12 @@ hideInToc: true
 In `client.rb`
 ```bash
 # /etc/chef/client.rb
-require '/etc/cinc/handlers/attribute-change-handler.rb'
+require '/etc/cinc/handlers/attribute_changed_handler.rb'
 ```
 
 Attribute change handler:
 ```bash
-# /etc/cinc/handlers/attribute-change-handler.rb
+# /etc/cinc/handlers/attribute_changed_handler.rb
 Chef.event_handler do
   on :attribute_changed do |precedence, keys, value| do
     # Since we just got called when an attribute was changed, we can wind
@@ -1704,20 +1704,12 @@ hideInToc: true
 - Records all resource updates
 - Prints out details on the resource/source code location for a resource update
 - To not miss delayed or indirect updates, avoids using  `run_status.updated_resources`, tracks updates manually
+- Reports updates on the `:run_completed` event
 
 ---
 hideInToc: true
 ---
-
-In `client.rb`
-```bash
-# /etc/chef/client.rb
-require '/etc/cinc/handlers/resource-updated-handler.rb'
-```
-
----
-hideInToc: true
----
+In `boxcutter_ohai/recipes/default.rb`
 ```bash
 Chef.event_handler do
   resource_updates = []
