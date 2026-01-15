@@ -948,7 +948,7 @@ layout: section
 hideInToc: true
 ---
 
-Tier is configured via `/etc/boxcutter_info.json`
+Tier is configured via `/etc/boxcutter-config.json`
 
 ```bash
 apt-get update
