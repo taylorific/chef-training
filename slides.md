@@ -1767,6 +1767,35 @@ hideInToc: true
 hideInToc: true
 ---
 
+# Getting Started Writing Report Handlers
+
+There are three kinds of report handlers:
+
+## Start
+**Beginning of run**
+Runs once, at the start of a run
+
+## Report
+**Successful end**
+Runs once, only when the run succeeds.
+
+## Exception
+Runs once, only when the run fails.
+
+---
+hideInToc: true
+---
+
+# Create a cookbook named report_handler
+
+```bash
+
+```
+
+---
+hideInToc: true
+---
+
 # Event Handlers
 
 - Use the Handler DSL to attach a callback to an event via the `on` method
