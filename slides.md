@@ -1690,7 +1690,75 @@ hideInToc: true
 # Handlers
 
 - Handlers can hook events during the chef run
-- Ruby code, loaded with `require` in the `client.rb`
+- Ruby code, loaded with `require` in the `client.rb` or chef resources in recipes, depending on use
+
+---
+
+## 1. Report Handlers
+
+**What they are**
+- Implemented with `Chef::Handler`
+- Methods: `report`, `exception`, `start`
+- Enabled with the `chef_handler` resource
+
+**When they run**
+- **Once**, at the **end of the run**
+
+**What they see**
+- A single object: `Chef::RunStatus`
+- Aggregated view of the entire converge
+
+**Mental model**
+> “The run has finished — summarize what happened.”
+
+**Typical uses**
+- Write a JSON report
+- Send Slack / email notifications
+- Record success, duration, updated resources
+
+---
+
+## 2. Event Handlers
+
+**What they are**
+- Registered with the `Chef.event_handler` DSL
+
+**When they run**
+- **Throughout the run**
+- Fired for **many individual events**
+
+**What they see**
+- Event payloads, not a final summary
+- Incremental, streaming data
+
+**Mental model**
+> “Something just happened — observe it.”
+
+**Typical uses**
+- Metrics & telemetry
+- Audit logs
+- Real-time progress reporting
+
+---
+
+## Side-by-Side Comparison
+
+| | Report Handler | Event Handler |
+|---|---|---|
+| Timing | End of run | During run |
+| Frequency | Once | Many times |
+| Data model | Aggregate | Streaming |
+| Main object | `RunStatus` | Event args |
+| Best for | Reports & alerts | Instrumentation |
+| Noise level | Low | High |
+
+---
+hideInToc: true
+---
+
+# Chef Has **Two Kinds of Handlers**
+
+They sound similar, but they solve **very different problems**
 
 ---
 hideInToc: true
