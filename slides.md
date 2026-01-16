@@ -1693,6 +1693,9 @@ hideInToc: true
 - Ruby code, loaded with `require` in the `client.rb` or chef resources in recipes, depending on use
 
 ---
+title: Chef Handlers - Two systems
+layout: two-cols
+---
 
 ## 1. Report Handlers
 
