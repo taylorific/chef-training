@@ -1687,17 +1687,24 @@ layout: section
 hideInToc: true
 ---
 
-# Handlers
+# Chef Handlers
 
 - Handlers can hook events during the chef run
 - Ruby code, loaded with `require` in the `client.rb` or chef resources in recipes, depending on use
 
 ---
-title: Chef Handlers - Two systems
-layout: two-cols
+hideInToc: true
 ---
 
-## 1. Report Handlers
+# Chef Has **Two Kinds of Handlers**
+
+They sound similar, but they solve **very different problems**
+
+---
+hideInToc: true
+---
+
+# Handler Types - Report Handlers
 
 **What they are**
 - Implemented with `Chef::Handler`
@@ -1711,17 +1718,16 @@ layout: two-cols
 - A single object: `Chef::RunStatus`
 - Aggregated view of the entire converge
 
-**Mental model**
-> “The run has finished — summarize what happened.”
-
 **Typical uses**
 - Write a JSON report
 - Send Slack / email notifications
 - Record success, duration, updated resources
 
 ---
+hideInToc: true
+---
 
-## 2. Event Handlers
+# Handler Types: Event Handlers
 
 **What they are**
 - Registered with the `Chef.event_handler` DSL
@@ -1734,17 +1740,16 @@ layout: two-cols
 - Event payloads, not a final summary
 - Incremental, streaming data
 
-**Mental model**
-> “Something just happened — observe it.”
-
 **Typical uses**
 - Metrics & telemetry
 - Audit logs
 - Real-time progress reporting
 
 ---
+hideInToc: true
+---
 
-## Side-by-Side Comparison
+# Handler Types: Side-by-Side Comparison
 
 | | Report Handler | Event Handler |
 |---|---|---|
@@ -1754,6 +1759,7 @@ layout: two-cols
 | Main object | `RunStatus` | Event args |
 | Best for | Reports & alerts | Instrumentation |
 | Noise level | Low | High |
+| Mental model | The run has finished — summarize what happened. | Something just happened — observe it. |
 
 ---
 hideInToc: true
