@@ -1696,15 +1696,16 @@ hideInToc: true
 hideInToc: true
 ---
 
-# Chef Has **Two Kinds of Handlers**
+## Chef Has **Two Kinds of Handlers**
 
 They sound similar, but they solve **very different problems**
 
 ---
 hideInToc: true
+layout: full
 ---
 
-# Handler Types - Report Handlers
+## Handler Types - Report Handlers
 
 **What they are**
 - Implemented with `Chef::Handler`
@@ -1725,9 +1726,10 @@ hideInToc: true
 
 ---
 hideInToc: true
+layout: full
 ---
 
-# Handler Types: Event Handlers
+## Handler Types: Event Handlers
 
 **What they are**
 - Registered with the `Chef.event_handler` DSL
@@ -1759,15 +1761,7 @@ hideInToc: true
 | Main object | `RunStatus` | Event args |
 | Best for | Reports & alerts | Instrumentation |
 | Noise level | Low | High |
-| Mental model | The run has finished — summarize what happened. | Something just happened — observe it. |
-
----
-hideInToc: true
----
-
-# Chef Has **Two Kinds of Handlers**
-
-They sound similar, but they solve **very different problems**
+| Mental model | The run has finished. Summarize what happened. | Something just happened. Observe it. |
 
 ---
 hideInToc: true
