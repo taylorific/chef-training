@@ -815,6 +815,7 @@ sudo tee /etc/cinc/client-prod.rb <<EOF
 local_mode true
 chef_repo_path '/var/chef/repos/boxcutter-chef-cookbooks'
 cookbook_path ['/var/chef/repos/chef-cookbooks/cookbooks', '/var/chef/repos/boxcutter-chef-cookbooks/cookbooks']
+role_path '/var/chef/repos/boxcutter-chef-cookbooks/roles'
 follow_client_key_symlink true
 client_fork false
 no_lazy_load false
@@ -847,6 +848,8 @@ sudo tee /etc/chefctl-config.rb <<EOF
 chef_client '/opt/cinc/bin/cinc-client'
 chef_options ['--no-fork']
 log_dir '/var/log/chef'
+client_config_dir '/etc/cinc'
+plugin_path '/etc/cinc/chefctl_hooks.rb'
 EOF
 
 sudo tee /etc/chef/run-list.json <<EOF
