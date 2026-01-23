@@ -789,7 +789,7 @@ curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18.6.2
 # /opt/chef -> /opt/cinc
 sudo ln -snf /opt/cinc /opt/chef
 
-# chefctl uses a shebang that points at /opt/chef, so make sure we have a link
+# taste-tester uses /etc/chef by default, so make sure we have a link
 # in place for compatibility
 sudo mkdir -p /etc/cinc
 # -n must be here in case /etc/chef already exists, otherwise
