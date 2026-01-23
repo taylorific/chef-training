@@ -773,11 +773,11 @@ sudo git clone https://github.com/boxcutter/boxcutter-chef-cookbooks.git \
 hideInToc: true
 ---
 
-```
+```bash
 sudo apt-get update
 sudo apt-get install curl
 ```
-```
+```bash
 # Defaulting to cinc-client 18.6.x as that's what Meta upstream currently defaults
 # curl -L https://omnitruck.cinc.sh/install.sh | sudo bash
 curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18.6.2
