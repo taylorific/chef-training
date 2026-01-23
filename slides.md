@@ -841,7 +841,7 @@ hideInToc: true
 ---
 
 ```bash
-sudo tee /etc/chef/chefctl_hooks.rb <<EOF
+sudo tee /etc/cinc/chefctl_hooks.rb <<EOF
 EOF
 
 sudo tee /etc/chefctl-config.rb <<EOF
@@ -852,7 +852,7 @@ client_config_dir '/etc/cinc'
 plugin_path '/etc/cinc/chefctl_hooks.rb'
 EOF
 
-sudo tee /etc/chef/run-list.json <<EOF
+sudo tee /etc/cinc/run-list.json <<EOF
 {
   "run_list" : [
     "recipe[boxcutter_ohai]",
