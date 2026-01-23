@@ -748,11 +748,46 @@ layout: section
 hideInToc: true
 ---
 
-# boxcutter chef-client - Install cinc client
-
 ```bash
 # Login to the VM with autobot
 virsh console ubuntu-server-2404
+```
+
+---
+hideInToc: true
+---
+
+```bash
+sudo apt-get update
+sudo apt-get install git
+```
+```bash
+sudo mkdir -p /var/chef/repos /var/log/chef
+sudo git clone https://github.com/boxcutter/chef-cookbooks.git \
+  /var/chef/repos/chef-cookbooks
+sudo git clone https://github.com/boxcutter/boxcutter-chef-cookbooks.git \
+  /var/chef/repos/boxcutter-chef-cookbooks
+```
+
+---
+hideInToc: true
+---
+
+```
+sudo apt-get update
+sudo apt-get install curl
+```
+```
+# Defaulting to cinc-client 18.6.x as that's what Meta upstream currently defaults
+# curl -L https://omnitruck.cinc.sh/install.sh | sudo bash
+curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18.6.2
+
+# chefctl uses a shebang that points at /opt/chef, so make sure we have a link
+# in place for compatibility
+# -n must be here in case /opt/chef already exists, otherwise
+# it tries to create /etc/chef/cinc
+# /opt/chef -> /opt/cinc
+sudo ln -snf /opt/cinc /opt/chef
 
 # chefctl uses a shebang that points at /opt/chef, so make sure we have a link
 # in place for compatibility
@@ -761,14 +796,7 @@ sudo mkdir -p /etc/cinc
 # it tries to create /etc/chef/cinc
 # /etc/chef -> /etc/cinc
 sudo ln -snf /etc/cinc /etc/chef
-
-# curl -L https://omnitruck.cinc.sh/install.sh | sudo bash
-curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -v 18.6.2
-
-# /opt/chef -> /opt/cinc
-sudo ln -snf /opt/cinc /opt/chef
 ```
-
 
 ---
 hideInToc: true
@@ -803,8 +831,8 @@ EOF
 sudo openssl genrsa -out /etc/cinc/client-prod.pem
 sudo openssl genrsa -out /etc/cinc/validation.pem
 
-sudo ln -sf /etc/cinc/client-prod.rb /etc/chef/client.rb
-sudo ln -sf /etc/cinc/client-prod.pem /etc/chef/client.pem
+sudo ln -sf /etc/cinc/client-prod.rb /etc/cinc/client.rb
+sudo ln -sf /etc/cinc/client-prod.pem /etc/cinc/client.pem
 ````
 
 ---
@@ -829,24 +857,6 @@ sudo tee /etc/chef/run-list.json <<EOF
   ]
 }
 EOF
-```
-
----
-hideInToc: true
----
-
-```bash
-sudo apt-get update
-sudo apt-get install git
-```
-
-```bash
-sudo mkdir -p /var/chef /var/chef/repos /var/log/chef
-cd /var/chef/repos
-sudo git clone https://github.com/boxcutter/chef-cookbooks.git \
-  /var/chef/repos/chef-cookbooks
-sudo git clone https://github.com/boxcutter/boxcutter-chef-cookbooks.git \
-  /var/chef/repos/boxcutter-chef-cookbooks
 ```
 
 ---
