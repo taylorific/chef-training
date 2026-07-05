@@ -8,6 +8,24 @@ docker run -it --rm \
   --publish 3030:3030 \
   docker.io/boxcutter/slidev --remote
 
+# Dependencies
+
+```bash
+docker run -it --rm \
+  --mount type=bind,source="$(pwd)",target="/slidev" \
+  --entrypoint /bin/bash \
+  docker.io/boxcutter/slidev
+
+  # pin to 52.15.2 for now
+  # https://github.com/slidevjs/slidev/issues/2629
+  git pull
+  rm -rf node_modules package-lock.json
+  npm install
+  git add package.json package-lock.json
+  git commit -m "Sync npm lockfile"
+  git push
+```
+
 # Visit <http:/localhost:3030/>
 ```
 
